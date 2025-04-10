@@ -1,0 +1,184 @@
+ft_memset:     [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_bzero:      [OK] [OK] [OK] [OK] 
+ft_memcpy:     [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [CRASH] 
+[crash]: your memcpy does not behave well with NULL as both params with size
+Test code:
+	ft_memcpy(((void *)0), ((void *)0), 3);
+
+
+ft_memmove:    [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [CRASH] [OK] 
+[crash]: your memmove does not well with NULL as both parameters and size
+Test code:
+	ft_memmove(((void *)0), ((void *)0), 5);
+
+
+ft_memchr:     [OK] [FAILED] [OK] [OK] [OK] [CRASH] [OK] [OK] 
+[fail]: your memchr does not cast in unsigned the memory
+Test code:
+	char *src = "/|\x12\xff\x09\x42\2002\42|\\";
+	int size = 10;
+
+	if (memchr(src, '\200', size) == ft_memchr(src, '\200', size))
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+Diffs:
+      memchr: |€2"|\|
+   ft_memchr: |(null)|
+
+[crash]: your memchr crash because it read too many bytes from s or attempt to write on s !
+Test code:
+	int size = 15;
+	char *src = electric_alloc(size);
+
+	__builtin___strcpy_chk (src, ":(){ :|: & };:", __builtin_object_size (src, 2 > 1 ? 1 : 0));
+	ft_memchr(src, '\xde', size);
+	exit(TEST_SUCCESS);
+
+
+ft_memcmp:     [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_strlen:     [OK] [OK] [OK] [OK] [NO CRASH] [OK] [OK] [OK] [OK] 
+[no crash]: your strlen does not segv when null is sended
+Test code:
+	ft_strlen(((void *)0));
+
+
+ft_isalpha:    [OK] 
+ft_isdigit:    [OK] 
+ft_isalnum:    [OK] 
+ft_isascii:    [OK] 
+ft_isprint:    [OK] 
+ft_toupper:    [OK] 
+ft_tolower:    [OK] 
+ft_strchr:     [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_strrchr:    [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_strncmp:    [OK] [OK] [OK] [OK] [OK] [OK] [FAILED] [OK] [OK] [FAILED] [OK] [OK] [OK] [OK] 
+[fail]: your strncmp does not cast in unsigned char the diff
+Test code:
+	char *s1 = "\200";
+	char *s2 = "\0";
+	int i1 = ((strncmp(s1, s2, 1) > 0) ? 1 : ((strncmp(s1, s2, 1) < 0) ? -1 : 0));
+	int i2 = ((ft_strncmp(s1, s2, 1) > 0) ? 1 : ((ft_strncmp(s1, s2, 1) < 0) ? -1 : 0));
+
+	if (i1 == i2)
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+Diffs:
+     strncmp: |1|
+  ft_strncmp: |-1|
+
+[fail]: your strncmp does not work with non ascii chars
+Test code:
+	char *s1 = "\x12\xff\x65\x12\xbd\xde\xad";
+	char *s2 = "\x12\x02";
+	size_t size = 6;
+	int i1 = ((strncmp(s1, s2, size) > 0) ? 1 : ((strncmp(s1, s2, size) < 0) ? -1 : 0));
+	int i2 = ((ft_strncmp(s1, s2, size) > 0) ? 1 : ((ft_strncmp(s1, s2, size) < 0) ? -1 : 0));
+
+	if (i1 == i2)
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+Diffs:
+     strncmp: |1|
+  ft_strncmp: |-1|
+
+ft_strlcpy:    [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_strlcat:    [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [NO CRASH] [OK] 
+[no crash]: your strlcat does not segfault when null parameter is sent
+Test code:
+	char b[0xF] = "nyan !";
+
+	ft_strlcat(b, ((void *)0), 2);
+
+
+ft_strnstr:    [OK] [OK] [FAILED] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [NO CRASH] [OK] 
+[fail]: your strnstr does not work with basic input
+Test code:
+	char *s1 = "MZIRIBMZIRIBMZE123";
+	char *s2 = "MZIRIBMZE";
+	size_t max = strlen(s2);
+	char *i1 = strnstr(s1, s2, max);
+	char *i2 = ft_strnstr(s1, s2, max);
+
+	if (i1 == i2)
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+Diffs:
+     strnstr: |(null)|
+  ft_strnstr: |MZIRIBMZE123|
+
+[no crash]: your strnstr does not segfault when null parameter is sent
+Test code:
+	ft_strnstr(((void *)0), "fake", 3);
+
+
+ft_atoi:       [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_calloc:     [OK] [OK] [OK] [OK] [OK] 
+ft_strdup:     [OK] [OK] [OK] [OK] [OK] [OK] [NO CRASH] 
+[no crash]: your strdup does not segv with NULL parameter
+Test code:
+	ft_strdup(((void *)0));
+
+
+ft_substr:     [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] {protected}[CRASH] 
+[crash]: your substr does not work when start >= ft_strlen(s)
+Test code:
+	char *str = "01234";
+	size_t size = 10;
+	char *ret = ft_substr(str, 10, size);
+
+	if (!strncmp(ret, "", 1))
+	{
+		free(ret);
+		exit(TEST_SUCCESS);
+	}
+	free(ret);
+	exit(TEST_FAILED);
+
+
+ft_strjoin:    [OK] [OK] [OK] [OK] [OK] {protected}
+ft_strtrim:    [OK] [OK] [OK] [CRASH] [CRASH] [OK] [OK] [OK] [OK] {protected}
+[crash]: your strtrim does not work with full blank input
+Test code:
+	char *s1 = "  \t \t \n   \n\n\n\t";
+	char *s2 = "";
+	char *ret = ft_strtrim(s1, " \n\t");
+
+	if (!strcmp(ret, s2))
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+
+[crash]: your strtrim does not work with empty input
+Test code:
+	char *s1 = "";
+	char *s2 = "";
+	char *ret = ft_strtrim(s1, " \n\t");
+
+	if (!strcmp(ret, s2))
+		exit(TEST_SUCCESS);
+	exit(TEST_FAILED);
+
+
+ft_split:      [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] {not protected}
+ft_itoa:       [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] [OK] 
+ft_strmapi:    [OK] [OK] [OK] [OK] [OK] {protected}
+ft_putchar_fd: [OK] [OK] 
+ft_putstr_fd:  [OK] [OK] {protected}
+ft_putendl_fd: [OK] [OK] {protected}
+ft_putnbr_fd:  [OK] [OK] [OK] [OK] [OK] 
+ft_lstnew:     [MISSING]
+ft_lstadd_front: [MISSING]
+ft_lstsize:    [MISSING]
+ft_lstlast:    [MISSING]
+ft_lstadd_back:[MISSING]
+ft_lstdelone:  [MISSING]
+ft_lstclear:   [MISSING]
+ft_lstiter:    [MISSING]
+ft_lstmap:     [MISSING]
+ft_striteri:   [OK] [OK] {protected}
+ft_islower:    [OK] 
+ft_isupper:    [OK] 
